@@ -1,0 +1,7 @@
+ultralytics
+sahi
+opencv-python
+pandas
+numpy
+matplotlib
+streamlit
