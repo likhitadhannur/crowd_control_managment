@@ -31,4 +31,14 @@ This project detects and counts people in crowded scenes using YOLO and SAHI (Sl
 - Streamlit web application
 - Crowd density alerts
 
+## Notes
 
+This repository contains the source code, notebook, sample images, and requirements file.
+
+YOLO model weight files (.pt) are excluded from version control and must be downloaded separately before running the project.
+
+### Run the Project
+
+pip install -r requirements.txt
+
+streamlit run app.py
