@@ -31,5 +31,4 @@ This project detects and counts people in crowded scenes using YOLO and SAHI (Sl
 - Streamlit web application
 - Crowd density alerts
 
-## Author
-Saniya
+
