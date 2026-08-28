@@ -25,6 +25,28 @@ This project detects and counts people in crowded scenes using YOLO and SAHI (Sl
 - sample images
 - output images
 
+## Results
+
+The system successfully detects and counts people in crowded scenes using YOLO and SAHI.
+
+Example outputs include:
+
+- Original crowd image
+- Detected people image
+- Crowd count visualization
+- Crowd analysis results stored in CSV format
+
+## Sample Output
+
+### Input Image
+![Input](crowd2.jpg)
+
+### Detection Result
+![Detection](crowd2_detected.jpg)
+
+### Crowd Count Result
+![Count Result](output_with_count.jpg)
+
 ## Future Improvements
 - Real-time video processing
 - CCTV integration
