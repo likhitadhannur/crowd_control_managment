@@ -1,7 +1,5 @@
-ultralytics
-sahi
-opencv-python-headless
-pandas
-numpy
-matplotlib
 streamlit
+ultralytics
+opencv-python-headless
+numpy
+imageio-ffmpeg
