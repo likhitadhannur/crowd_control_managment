@@ -9,9 +9,6 @@ sahi_output_256/
 
 *.csv
 
-yolo26n.pt
-yolo26s.pt
-*.pt
 runs/
 sahi_output/
 results/
