@@ -60,12 +60,13 @@ if uploaded_file is not None:
         2
     )
 
-    status = (
-        "OVERCROWDED"
-        if left_count > SAFE_LIMIT
-        or right_count > SAFE_LIMIT
-        else "NORMAL"
-    )
+status = (
+    "OVERCROWDED"
+    if total_count > SAFE_LIMIT
+    or left_count > SAFE_LIMIT
+    or right_count > SAFE_LIMIT
+    else "NORMAL"
+)
 
     st.image(
         cv2.cvtColor(annotated, cv2.COLOR_BGR2RGB),
