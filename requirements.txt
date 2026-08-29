@@ -1,6 +1,6 @@
 ultralytics
 sahi
-opencv-python
+opencv-python-headless
 pandas
 numpy
 matplotlib
