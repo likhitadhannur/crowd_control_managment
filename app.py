@@ -7,6 +7,11 @@ import os
 import subprocess
 import imageio_ffmpeg
 
+# Webcam imports
+from streamlit_webrtc import webrtc_streamer, VideoProcessorBase
+import av
+
+
 # ==========================================
 # CROWD CONTROL MANAGEMENT SYSTEM
 # ==========================================
@@ -14,6 +19,7 @@ import imageio_ffmpeg
 SAFE_LIMIT = 5
 CONFIDENCE = 0.10
 MODEL_PATH = "models/yolo26s.pt"
+
 
 # ==========================================
 # PAGE CONFIGURATION
@@ -32,6 +38,7 @@ st.write(
     "and overcrowding monitoring."
 )
 
+
 # ==========================================
 # LOAD YOLO MODEL
 # ==========================================
@@ -43,11 +50,13 @@ def load_model():
 
 if not os.path.exists(MODEL_PATH):
     st.error(
-        f"Model file '{MODEL_PATH}' was not found."
+        f"Model file '{MODEL_PATH}' was not found. "
+        f"Please make sure '{MODEL_PATH}' exists."
     )
     st.stop()
 
 model = load_model()
+
 
 # ==========================================
 # INPUT SELECTION
@@ -55,9 +64,10 @@ model = load_model()
 
 input_type = st.radio(
     "Select Input",
-    ["Image", "Video"],
+    ["Image", "Video", "Live Webcam"],
     horizontal=True
 )
+
 
 # ==========================================
 # IMAGE DETECTION
@@ -119,6 +129,7 @@ if input_type == "Image":
             use_container_width=True
         )
 
+        # Metrics
         col1, col2 = st.columns(2)
 
         with col1:
@@ -133,6 +144,7 @@ if input_type == "Image":
                 SAFE_LIMIT
             )
 
+        # Status
         if status == "OVERCROWDED":
             st.error(
                 "🚨 ALERT: CROWD LIMIT EXCEEDED!"
@@ -142,11 +154,12 @@ if input_type == "Image":
                 "✅ NORMAL CROWD LEVEL"
             )
 
+
 # ==========================================
 # VIDEO DETECTION
 # ==========================================
 
-else:
+elif input_type == "Video":
 
     uploaded_video = st.file_uploader(
         "Upload a crowd video",
@@ -226,9 +239,11 @@ else:
             st.error(
                 "Unable to create output video."
             )
+
             cap.release()
             os.remove(input_file.name)
             os.remove(temp_avi.name)
+
             st.stop()
 
         # --------------------------------------
@@ -500,6 +515,160 @@ else:
         # Clean output
         os.remove(output_mp4.name)
 
+
+# ==========================================
+# LIVE WEBCAM DETECTION
+# ==========================================
+
+elif input_type == "Live Webcam":
+
+    st.subheader("📷 Live Webcam Detection")
+
+    st.write(
+        "Click START below and allow browser access "
+        "to your webcam."
+    )
+
+    # --------------------------------------
+    # WEBCAM PROCESSOR
+    # --------------------------------------
+
+    class WebcamProcessor(VideoProcessorBase):
+
+        def __init__(self):
+
+            self.model = model
+
+        def recv(self, frame):
+
+            # Convert webcam frame to NumPy array
+            img = frame.to_ndarray(
+                format="bgr24"
+            )
+
+            # YOLO detection
+            results = self.model.predict(
+                img,
+                imgsz=640,
+                conf=CONFIDENCE,
+                classes=[0],
+                verbose=False
+            )
+
+            result = results[0]
+
+            # Count people
+            person_count = len(result.boxes)
+
+            # Crowd status
+            if person_count > SAFE_LIMIT:
+
+                status = "OVERCROWDED"
+
+                text_color = (
+                    0,
+                    0,
+                    255
+                )
+
+            else:
+
+                status = "NORMAL"
+
+                text_color = (
+                    0,
+                    255,
+                    0
+                )
+
+            # Draw YOLO bounding boxes
+            annotated = result.plot()
+
+            # ----------------------------------
+            # INFORMATION PANEL
+            # ----------------------------------
+
+            cv2.rectangle(
+                annotated,
+                (10, 10),
+                (430, 125),
+                (0, 0, 0),
+                -1
+            )
+
+            cv2.putText(
+                annotated,
+                f"People Count: {person_count}",
+                (25, 50),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.8,
+                text_color,
+                2
+            )
+
+            cv2.putText(
+                annotated,
+                f"Safe Limit: {SAFE_LIMIT}",
+                (25, 82),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.7,
+                (255, 255, 255),
+                2
+            )
+
+            cv2.putText(
+                annotated,
+                f"Status: {status}",
+                (25, 112),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.7,
+                text_color,
+                2
+            )
+
+            # ----------------------------------
+            # OVERCROWDING ALERT
+            # ----------------------------------
+
+            if status == "OVERCROWDED":
+
+                cv2.putText(
+                    annotated,
+                    "ALERT: OVERCROWDED!",
+                    (25, 160),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    0.9,
+                    (0, 0, 255),
+                    3
+                )
+
+            # Convert back to VideoFrame
+            return av.VideoFrame.from_ndarray(
+                annotated,
+                format="bgr24"
+            )
+
+
+    # --------------------------------------
+    # START WEBCAM
+    # --------------------------------------
+
+    webrtc_streamer(
+        key="crowd-webcam",
+        video_processor_factory=WebcamProcessor,
+        media_stream_constraints={
+            "video": True,
+            "audio": False
+        },
+        async_processing=True
+    )
+
+    st.info(
+        "💡 Click START to begin live crowd detection. "
+        "Your webcam video will be processed in real time."
+    )
+
+
 # ==========================================
 # PROJECT INFORMATION
 # ==========================================
@@ -518,7 +687,7 @@ st.sidebar.write(
 
     **Confidence:** {CONFIDENCE}
 
-    **Input:** Image / Video
+    **Input:** Image / Video / Live Webcam
 
     **Output:** Person count and crowd status
     """
