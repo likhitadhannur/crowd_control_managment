@@ -6,3 +6,4 @@ numpy
 matplotlib
 streamlit
 imageio_ffmpeg
+streamlit-webrtc
