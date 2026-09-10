@@ -5,7 +5,7 @@ import numpy as np
 import tempfile
 import os
 import subprocess
-import imageio-ffmpeg
+import imageio_ffmpeg
 
 # Webcam imports
 from streamlit_webrtc import webrtc_streamer, VideoProcessorBase
