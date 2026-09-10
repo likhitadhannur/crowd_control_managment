@@ -3,7 +3,7 @@ from ultralytics import YOLO
 import cv2
 import numpy as np
 
-SAFE_LIMIT = 10
+SAFE_LIMIT = 5
 
 @st.cache_resource
 def load_model():
