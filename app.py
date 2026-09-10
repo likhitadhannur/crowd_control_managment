@@ -68,7 +68,7 @@ status = (
     else "NORMAL"
 )
 
-    st.image(
+st.image(
         cv2.cvtColor(annotated, cv2.COLOR_BGR2RGB),
         caption="Detection Result"
     )
