@@ -69,13 +69,13 @@ status = (
 )
 
 st.image(
-        cv2.cvtColor(annotated, cv2.COLOR_BGR2RGB),
-        caption="Detection Result"
-    )
+    cv2.cvtColor(annotated, cv2.COLOR_BGR2RGB),
+    caption="Detection Result"
+)
 
- st.metric("Left Count", left_count)
- st.metric("Right Count", right_count)
- st.metric("Total Count", total_count)
+st.metric("Left Count", left_count)
+st.metric("Right Count", right_count)
+st.metric("Total Count", total_count)
 
     if status == "OVERCROWDED":
         st.error("ALERT: ZONE OVERCROWDED")
