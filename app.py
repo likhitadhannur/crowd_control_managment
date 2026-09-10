@@ -77,7 +77,7 @@ st.metric("Left Count", left_count)
 st.metric("Right Count", right_count)
 st.metric("Total Count", total_count)
 
-    if status == "OVERCROWDED":
-        st.error("ALERT: ZONE OVERCROWDED")
-    else:
-        st.success("NORMAL")
+if status == "OVERCROWDED":
+    st.error("ALERT: ZONE OVERCROWDED")
+else:
+    st.success("NORMAL")
